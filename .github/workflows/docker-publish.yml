@@ -25,4 +25,4 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: hunglv/my-app-nodejs:latest
+          tags: hungdha/my-app:${{ github.sha }}
