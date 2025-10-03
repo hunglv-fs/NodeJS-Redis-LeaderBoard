@@ -1,0 +1,45 @@
+services:
+  app:
+    build: .
+    container_name: node-redis-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - MYSQL_HOST=mysql
+      - MYSQL_DATABASE=game_db
+      - MYSQL_USER=game_user
+      - MYSQL_PASSWORD=game_pass
+    volumes:
+      - .:/usr/src/app
+    command: sh -c "npm install && node index.js"
+    networks:
+      - game-network
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-game
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: game_db
+      MYSQL_USER: game_user
+      MYSQL_PASSWORD: game_pass
+    volumes:
+      - ./init-sql:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
+    networks:
+      - game-network
+  redis:
+    image: redis:7
+    container_name: redis-server
+    ports:
+      - "6379:6379"
+    networks:
+      - game-network
+volumes:
+  mysql-data:
+networks:
+  game-network:
+    driver: bridge
